@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventario de Cámaras, IPs & Diario de Trabajo - TI</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <script>
+        // Configuración personalizada de Tailwind con paleta de azules oscuros y acentos de red
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            darkest: '#05070f', // Negro de medianoche profundo
+                            dark: '#0c101f',    // Azul oscuro de fondo
+                            card: '#121829',    // Tarjetas gris-azuladas frías
+                            border: '#1e293b',  // Bordes pizarra oscuros
+                            accent: '#3b82f6',  // Azul cobalto brillante
+                            accentHover: '#2563eb',
+                            sky: '#38bdf8'      // Azul cielo de estado activo
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #05070f;
+        }
+        .font-mono-custom {
+            font-family: 'JetBrains Mono', monospace;
+        }
+        /* Barra de desplazamiento adaptada al tema oscuro de TI */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #05070f;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1e293b;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #3b82f6;
+        }
+    </style>
+</head>
+<body class="bg-brand-darkest text-slate-100 min-h-screen flex flex-col">
+
+    <!-- 1. PANTALLA DE INICIO DE SESIÓN (LOGIN VIEW) -->
+    <div id="login-view" class="min-h-screen flex items-center justify-center p-4 relative overflow-hidden">
+        <!-- Luces de fondo de red y profundidad óptica -->
+        <div class="absolute top-1/4 left-1/4 w-96 h-96 bg-brand-accent/10 rounded-full blur-[120px] pointer-events-none"></div>
+        <div class="absolute bottom-1/3 right-1/4 w-80 h-80 bg-brand-sky/5 rounded-full blur-[100px] pointer-events-none"></div>
+
+        <div class="max-w-md w-full bg-brand-dark border border-brand-border rounded-3xl p-8 shadow-2xl relative z-10">
+            <!-- Icono y cabecera de la terminal -->
+            <div class="flex flex-col items-center mb-6">
+                <div class="p-3.5 bg-brand-accent/10 text-brand-sky rounded-2xl border border-brand-accent/20 mb-3 animate-pulse">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                    </svg>
+                </div>
+                <h2 class="text-xl font-bold tracking-tight text-white text-center">Acceso a Central TI</h2>
+                <p class="text-xs text-slate-400 mt-1 text-center font-mono-custom">CCTV & Consola de Seguridad de Red</p>
+            </div>
+
+            <!-- Formulario de inicio de sesión -->
+            <form id="login-form" onsubmit="handleLoginSubmit(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-400 mb-1.5 uppercase tracking-wider">Nombre de Usuario</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                            </svg>
+                        </span>
+                        <input type="text" id="login-username" required placeholder="admin" class="w-full pl-9 pr-4 py-2.5 bg-brand-darkest border border-brand-border focus:border-brand-accent focus:ring-1 focus:ring-brand-accent rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none transition-all">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-400 mb-1.5 uppercase tracking-wider">Contraseña de TI</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                            </svg>
+                        </span>
+                        <input type="password" id="login-password" required placeholder="••••••••" class="w-full pl-9 pr-10 py-2.5 bg-brand-darkest border border-brand-border focus:border-brand-accent focus:ring-1 focus:ring-brand-accent rounded-xl text-xs text-white placeholder-slate-500 focus:outline-none transition-all font-mono-custom">
+                        <button type="button" onclick="toggleLoginPassword()" class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-white" title="Mostrar contraseña">
+                            <svg id="eye-icon" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <p id="login-error-msg" class="hidden text-xs text-red-400 font-semibold text-center"></p>
+
+                <button type="submit" class="w-full py-3 bg-brand-accent hover:bg-brand-accentHover text-xs font-bold rounded-xl text-white transition-all flex items-center justify-center gap-2 shadow-lg">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l-4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+                    </svg>
+                    Iniciar Sesión
+                </button>
+            </form>
+
+            <div class="mt-6 p-4 bg-brand-darkest border border-brand-border/50 rounded-xl text-center">
+                <p class="text-xs text-slate-400">
+                    <strong>Demo:</strong> Usuario: <code class="text-brand-sky font-mono-custom">admin</code> | Contraseña: <code class="text-brand-sky font-mono-custom">BellaCCTV2026</code>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. VISTA DE LA APLICACIÓN (APP VIEW - SECURED ONCE LOGGED IN) -->
+    <div id="app-view" class="hidden min-h-screen flex flex-col">
+        <!-- Header -->
+        <header class="border-b border-brand-border bg-brand-dark/95 backdrop-blur sticky top-0 z-40">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col lg:flex-row items-center justify-between gap-4">
+                <div class="flex items-center gap-3">
+                    <div class="p-2.5 bg-brand-accent/10 text-brand-sky rounded-xl border border-brand-accent/20">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-bold tracking-tight text-white">Central de Red & Seguridad</h1>
+                        <p class="text-xs text-slate-400">Consola de TI, CCTV & Diario de Actividades</p>
+                    </div>
+                </div>
+                
+                <div class="flex flex-wrap items-center gap-3 w-full lg:w-auto justify-end">
+                    <div class="flex items-center gap-2.5 bg-brand-darkest/60 p-1.5 rounded-xl border border-brand-border">
+                        <span id="role-badge" class="inline-flex items-center text-[10px] font-bold px-2 py-1.5 rounded-lg border uppercase tracking-wider shrink-0"></span>
+                        <button onclick="handleLogout()" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-red-950/40 hover:bg-red-900/40 text-red-400 rounded-lg text-xs font-bold transition-all border border-red-900/30 shadow-sm" title="Cerrar sesión">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+                            </svg>
+                            Salir
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            
+            <!-- Metrics Panel -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                <div class="bg-brand-dark border border-brand-border rounded-2xl p-4 shadow-sm">
+                    <div class="text-sm font-medium text-slate-400">Cámaras Totales</div>
+                    <div class="text-3xl font-bold text-white mt-1" id="stat-total-cams">0</div>
+                </div>
+                <div class="bg-brand-dark border border-brand-border rounded-2xl p-4 shadow-sm">
+                    <div class="text-sm font-medium text-slate-400">Ubicaciones</div>
+                    <div class="text-3xl font-bold text-brand-sky mt-1" id="stat-total-locations">0</div>
+                </div>
+                <div class="bg-brand-dark border border-brand-border rounded-2xl p-4 shadow-sm">
+                    <div class="text-sm font-medium text-slate-400">Rango IP Principal</div>
+                    <div class="text-xl font-bold text-white mt-2 font-mono-custom">10.10.x.x</div>
+                </div>
+                <div class="bg-brand-dark border border-brand-border rounded-2xl p-4 shadow-sm">
+                    <div class="text-sm font-medium text-slate-400">Estado</div>
+                    <div class="text-lg font-bold text-emerald-400 mt-2">✓ En Línea</div>
+                </div>
+            </div>
+
+            <!-- Filter & Search Controls -->
+            <div id="filter-controls-container" class="bg-brand-dark border border-brand-border rounded-2xl p-4 sm:p-6 mb-8 shadow-sm">
+                <div class="flex flex-col gap-4">
+                    <div class="flex flex-col sm:flex-row gap-3 w-full">
+                        <div class="relative flex-grow">
+                            <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-slate-400">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                                </svg>
+                            </span>
+                            <input type="text" id="search-input" onkeyup="filterData()" placeholder="Buscar por IP, Cámara, Ubicación o Grupo..." class="w-full pl-10 pr-4 py-3 bg-brand-darkest border border-brand-border rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-accent focus:border-transparent transition-all">
+                        </div>
+                        <button onclick="exportToCSV()" class="inline-flex items-center gap-2 px-4 py-3 bg-brand-accent hover:bg-brand-accentHover active:bg-blue-700 text-white text-sm font-semibold rounded-lg transition-colors duration-150 shadow-md">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                            </svg>
+                            Exportar CSV
+                        </button>
+                    </div>
+
+                    <div>
+                        <span class="text-xs font-semibold text-slate-400 uppercase tracking-wider block mb-2">Filtrar por Ubicación</span>
+                        <div class="flex flex-wrap gap-2" id="location-filters">
+                            <!-- Dynamic Buttons -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TABLE VIEW -->
+            <section id="view-table-section" class="space-y-6">
+                <div class="bg-brand-dark border border-brand-border rounded-2xl overflow-hidden shadow-xl">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse" id="cameras-table">
+                            <thead>
+                                <tr class="bg-brand-darkest border-b border-brand-border text-xs font-bold uppercase tracking-wider text-slate-400">
+                                    <th class="py-4 px-6">Ubicación</th>
+                                    <th class="py-4 px-6">Identificador</th>
+                                    <th class="py-4 px-6">Dirección IP</th>
+                                    <th class="py-4 px-6">Detalles / Grupo</th>
+                                    <th class="py-4 px-6 text-right">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-brand-border text-sm text-slate-300" id="table-body">
+                                <!-- Dynamic rows -->
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <!-- Empty state -->
+                    <div id="no-results" class="hidden p-12 text-center">
+                        <svg class="w-12 h-12 text-slate-600 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        <h3 class="text-lg font-semibold text-white">No se encontraron cámaras</h3>
+                        <p class="text-sm text-slate-400 mt-1">Prueba a buscar con otros términos o cambia la ubicación seleccionada.</p>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+
+        <!-- Toast Notification Container -->
+        <div id="toast" class="fixed bottom-6 right-6 z-50 transform translate-y-20 opacity-0 pointer-events-none transition-all duration-300 bg-brand-dark border border-brand-accent/30 text-brand-sky text-xs font-semibold px-4 py-3 rounded-xl shadow-2xl flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-brand-sky animate-ping"></span>
+            <span id="toast-text">Acción realizada con éxito</span>
+        </div>
+
+    </div>
+
+    <!-- Script Section -->
+    <script>
+        const initialCameraDatabase = [
+            // 1. PLANET HONDA 65
+            { location: "Planet Honda 65", cam: "CAM 1", ip: "10.10.28.11", group: "General", installedAt: "2024-11-10" },
+            { location: "Planet Honda 65", cam: "CAM 2", ip: "10.10.28.12", group: "General", installedAt: "2024-11-10" },
+            { location: "Planet Honda 65", cam: "CAM 3", ip: "10.10.28.13", group: "General", installedAt: "2024-11-12" },
+            { location: "Planet Honda 65", cam: "CAM 4", ip: "10.10.28.14", group: "General", installedAt: "2024-11-12" },
+
+            // 2. HONDA SAN JUAN
+            { location: "Honda San Juan", cam: "CAM 1", ip: "10.10.29.11", group: "General", installedAt: "2025-01-05" },
+            { location: "Honda San Juan", cam: "CAM 2", ip: "10.10.29.12", group: "General", installedAt: "2025-01-05" },
+            { location: "Honda San Juan", cam: "CAM 3", ip: "10.10.29.13", group: "General", installedAt: "2025-01-07" },
+
+            // 3. HONDA TALLER
+            { location: "Honda Taller", cam: "CAM 1", ip: "10.10.41.31", group: "Taller", installedAt: "2025-02-10" },
+            { location: "Honda Taller", cam: "CAM 2", ip: "10.10.41.32", group: "Taller", installedAt: "2025-02-10" },
+
+            // 4. PARQUE DE LA VISTA
+            { location: "Parque de la Vista", cam: "Cam 1", ip: "10.10.48.11", group: "General", installedAt: "2026-07-15" },
+            { location: "Parque de la Vista", cam: "Cam 2", ip: "10.10.48.12", group: "General", installedAt: "2026-07-15" },
+        ];
+
+        let cameraDatabase = []; 
+        let accountsDatabase = []; 
+        let selectedLocation = "All";
+        let isUnlocked = false; 
+        let loggedInUser = null; 
+
+        window.onload = function() {
+            initAccounts();
+            cameraDatabase = [...initialCameraDatabase];
+            checkSession();
+            
+            document.getElementById("camera-form")?.addEventListener("submit", saveCameraForm);
+        }
+
+        function checkSession() {
+            const sessionUser = sessionStorage.getItem('cctv_user');
+            const sessionUnlocked = sessionStorage.getItem('cctv_unlocked') === 'true';
+
+            if (sessionUser && sessionUnlocked) {
+                loggedInUser = sessionUser;
+                isUnlocked = true;
+
+                document.getElementById("login-view").classList.add("hidden");
+                document.getElementById("app-view").classList.remove("hidden");
+
+                updateLockUI();
+                renderFilters();
+                renderTable();
+                updateStats();
+            } else {
+                document.getElementById("login-view").classList.remove("hidden");
+                document.getElementById("app-view").classList.add("hidden");
+            }
+        }
+
+        function handleLoginSubmit(e) {
+            e.preventDefault();
+            const userIn = document.getElementById("login-username");
+            const pwIn = document.getElementById("login-password");
+            const error = document.getElementById("login-error-msg");
+
+            const foundUser = accountsDatabase.find(
+                acc => acc.username.toLowerCase() === userIn.value.trim().toLowerCase() && acc.password === pwIn.value
+            );
+
+            if (foundUser) {
+                isUnlocked = true;
+                loggedInUser = foundUser.username;
+                sessionStorage.setItem('cctv_unlocked', 'true');
+                sessionStorage.setItem('cctv_user', foundUser.username);
+
+                userIn.value = "";
+                pwIn.value = "";
+                error.classList.add("hidden");
+
+                checkSession();
+                showToast(`¡Acceso Concedido! Bienvenido, ${foundUser.username}`);
+            } else {
+                error.innerText = "Usuario o contraseña incorrectos. Verifique e intente de nuevo.";
+                error.classList.remove("hidden");
+                pwIn.value = "";
+            }
+        }
+
+        function handleLogout() {
+            if (confirm("¿Estás seguro de que deseas cerrar tu sesión?")) {
+                sessionStorage.removeItem('cctv_unlocked');
+                sessionStorage.removeItem('cctv_user');
+                isUnlocked = false;
+                loggedInUser = null;
+
+                checkSession();
+                showToast("Sesión cerrada correctamente.");
+            }
+        }
+
+        function toggleLoginPassword() {
+            const input = document.getElementById("login-password");
+            const eyeIcon = document.getElementById("eye-icon");
+            if (input.type === "password") {
+                input.type = "text";
+                eyeIcon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l18 18"></path>`;
+            } else {
+                input.type = "password";
+                eyeIcon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>`;
+            }
+        }
+
+        function getLocations() {
+            const locations = new Set();
+            cameraDatabase.forEach(item => {
+                if (item && item.location) {
+                    locations.add(item.location);
+                }
+            });
+            return Array.from(locations).sort();
+        }
+
+        function updateStats() {
+            try {
+                const totalCams = cameraDatabase ? cameraDatabase.length : 0;
+                const totalLocs = getLocations().length;
+                
+                const camsEl = document.getElementById("stat-total-cams");
+                const locsEl = document.getElementById("stat-total-locations");
+                
+                if (camsEl) camsEl.innerText = totalCams;
+                if (locsEl) locsEl.innerText = totalLocs;
+            } catch (err) {
+                console.error("Error updating stats:", err);
+            }
+        }
+
+        function renderFilters() {
+            const filterContainer = document.getElementById("location-filters");
+            if (!filterContainer) return;
+            const locations = getLocations();
+            
+            let buttonsHtml = `
+                <button onclick="setFilter('All')" id="btn-All" class="px-4 py-2 text-xs sm:text-sm font-semibold rounded-lg transition-all border ${
+                    selectedLocation === 'All' 
+                    ? 'bg-brand-accent/10 border-brand-accent text-brand-sky' 
+                    : 'bg-brand-dark border-brand-border text-slate-300 hover:border-slate-700'
+                }">
+                    Todas (${cameraDatabase.length})
+                </button>
+            `;
+
+            locations.forEach(loc => {
+                const count = cameraDatabase.filter(c => c.location === loc).length;
+                buttonsHtml += `
+                    <button onclick="setFilter('${loc}')" id="btn-${loc.replace(/\s+/g, '-')}" class="px-4 py-2 text-xs sm:text-sm font-semibold rounded-lg transition-all border ${
+                        selectedLocation === loc 
+                        ? 'bg-brand-accent/10 border-brand-accent text-brand-sky' 
+                        : 'bg-brand-dark border-brand-border text-slate-300 hover:border-slate-700'
+                    }">
+                        ${loc} (${count})
+                    </button>
+                `;
+            });
+
+            filterContainer.innerHTML = buttonsHtml;
+        }
+
+        function setFilter(location) {
+            selectedLocation = location;
+            renderFilters();
+            filterData();
+        }
+
+        function filterData() {
+            const query = document.getElementById("search-input").value.toLowerCase().trim();
+            
+            const filtered = cameraDatabase.filter(item => {
+                const matchLocation = selectedLocation === "All" || item.location === selectedLocation;
+                
+                const matchQuery = 
+                    item.location.toLowerCase().includes(query) ||
+                    item.cam.toLowerCase().includes(query) ||
+                    item.ip.toLowerCase().includes(query) ||
+                    item.group.toLowerCase().includes(query);
+
+                return matchLocation && matchQuery;
+            });
+
+            renderTable(filtered);
+        }
+
+        function renderTable(dataToRender = cameraDatabase) {
+            const tbody = document.getElementById("table-body");
+            const noResults = document.getElementById("no-results");
+            if (!tbody) return;
+            tbody.innerHTML = "";
+
+            if (dataToRender.length === 0) {
+                noResults.classList.remove("hidden");
+                return;
+            } else {
+                noResults.classList.add("hidden");
+            }
+
+            dataToRender.forEach((row) => {
+                const openWebButton = `
+                    <button onclick="window.open('http://${row.ip}', '_blank')" class="p-1.5 hover:text-white text-brand-sky bg-brand-accent/10 border border-brand-accent/30 hover:bg-brand-accent rounded-lg transition-all flex items-center justify-center" title="Abrir interfaz web de la cámara">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                    </button>
+                `;
+
+                const tr = document.createElement("tr");
+                tr.className = "hover:bg-brand-card/50 transition-colors duration-150 border-b border-brand-border";
+                tr.innerHTML = `
+                    <td class="py-3.5 px-6 font-medium text-slate-200">${row.location}</td>
+                    <td class="py-3.5 px-6">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-brand-darkest text-slate-300 border border-brand-border">
+                            ${row.cam}
+                        </span>
+                    </td>
+                    <td class="py-3.5 px-6">
+                        <div class="flex items-center gap-2">
+                            <code class="font-mono-custom tracking-wider text-brand-sky font-bold">${row.ip}</code>
+                            ${openWebButton}
+                        </div>
+                    </td>
+                    <td class="py-3.5 px-6">
+                        <span class="text-xs text-slate-400 block">${row.group}</span>
+                        <span class="text-[10px] text-slate-500 block mt-0.5">Instalada: ${row.installedAt || '2024-11-10'}</span>
+                    </td>
+                    <td class="py-3.5 px-6 text-right">
+                        <button onclick="copyToClipboard('${row.ip}')" class="p-2 hover:text-brand-sky text-slate-400 bg-brand-darkest hover:bg-brand-card border border-brand-border rounded-lg transition-all" title="Copiar IP">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function updateLockUI() {
+            const badge = document.getElementById("role-badge");
+            const role = getLoggedInUserRole();
+
+            if (!badge) return;
+            badge.className = "inline-flex items-center text-[10px] font-bold px-2.5 py-1.5 rounded-lg border uppercase tracking-wider shrink-0";
+            
+            if (role === 'Administrador') {
+                badge.className += " bg-red-500/10 text-red-400 border-red-500/20";
+                badge.innerText = `TI: ${loggedInUser} (Admin)`;
+            } else {
+                badge.className += " bg-brand-accent/10 text-brand-sky border-brand-accent/20";
+                badge.innerText = `TI: ${loggedInUser} (Operador)`;
+            }
+        }
+
+        function getLoggedInUserRole() {
+            if (!loggedInUser) return null;
+            const user = accountsDatabase.find(u => u.username.toLowerCase() === loggedInUser.toLowerCase());
+            return user ? user.role : null;
+        }
+
+        function initAccounts() {
+            const savedAcc = localStorage.getItem('cctv_accounts');
+            if (savedAcc) {
+                accountsDatabase = JSON.parse(savedAcc);
+            } else {
+                accountsDatabase = [
+                    { username: "admin", password: "BellaCCTV2026", role: "Administrador" },
+                    { username: "operador", password: "CCTV123", role: "Operador" }
+                ];
+                localStorage.setItem('cctv_accounts', JSON.stringify(accountsDatabase));
+            }
+        }
+
+        function copyToClipboard(text) {
+            try {
+                const tempInput = document.createElement("input");
+                tempInput.value = text;
+                document.body.appendChild(tempInput);
+                tempInput.select();
+                document.execCommand("copy");
+                document.body.removeChild(tempInput);
+
+                showToast(`Copiado: "${text}"`);
+            } catch (err) {}
+        }
+
+        function showToast(message) {
+            try {
+                const toast = document.getElementById("toast");
+                const toastText = document.getElementById("toast-text");
+                toastText.innerText = message;
+                
+                toast.classList.remove("translate-y-20", "opacity-0", "pointer-events-none");
+                toast.classList.add("translate-y-0", "opacity-100");
+
+                setTimeout(() => {
+                    toast.classList.add("translate-y-20", "opacity-0", "pointer-events-none");
+                    toast.classList.remove("translate-y-0", "opacity-100");
+                }, 2500);
+            } catch (err) {}
+        }
+
+        function exportToCSV() {
+            try {
+                let csvContent = "\uFEFF"; 
+                csvContent += "Ubicacion,Camara,IP,Grupo,Fecha Instalacion\n";
+
+                cameraDatabase.forEach(item => {
+                    const row = `"${item.location}","${item.cam}","${item.ip}","${item.group}","${item.installedAt || '2024-11-10'}"`;
+                    csvContent += row + "\n";
+                });
+
+                const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+                const link = document.createElement("a");
+                link.href = URL.createObjectURL(blob);
+                link.setAttribute("download", "Inventario_Camaras_IP_Central.csv");
+                document.body.appendChild(link);
+
+                link.click();
+                document.body.removeChild(link);
+                showToast("CSV exportado correctamente");
+            } catch (err) {
+                showToast("Error al exportar CSV");
+            }
+        }
+
+        function saveCameraForm(e) {
+            e.preventDefault();
+        }
+    </script>
+</body>
+</html>
